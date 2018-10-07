@@ -7,17 +7,17 @@ from time import sleep, time
 import os
 import json
 
-with open('api_key.txt', 'r') as key_file:
+CURRENT_SCRIPT_DIR: str = os.path.dirname(os.path.realpath(__file__))
+CACHE_FOLDER: str = os.path.join(CURRENT_SCRIPT_DIR, 'downloaded_chats')
+EMOTES_FOLDER: str = os.path.join(CACHE_FOLDER, 'emote_cache')
+
+with open(os.path.join(CURRENT_SCRIPT_DIR, 'api_key.txt'), 'r') as key_file:
     HEADERS: dict = {'Client-ID': key_file.read()}
     
 BASE_CHAT_URL: str = 'https://api.twitch.tv/v5/videos/{video_id}/comments?cursor={cursor}'
 BASE_EMOTE_URL: str = 'https://static-cdn.jtvnw.net/emoticons/v1/{emote_id}/{emote_size}.0'
 EMOTE_SIZE = 1
 SLEEP_TIME: float = 1
-
-CURRENT_SCRIPT_DIR: str = os.path.dirname(os.path.realpath(__file__))
-CACHE_FOLDER: str = os.path.join(CURRENT_SCRIPT_DIR, 'downloaded_chats')
-EMOTES_FOLDER: str = os.path.join(CACHE_FOLDER, 'emote_cache')
 
 UNICODE_MATCHER: re = re.compile('[\U00010000-\U0010FFFF]')
 EMOJI_RANGES = [(0x2139, 0x3299), (0x1F004, 0x1F9E6)]
