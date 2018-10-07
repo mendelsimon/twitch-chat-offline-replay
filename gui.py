@@ -169,7 +169,7 @@ class ChatText(Text):
                 self.image_create(END, image=image, padx=2, pady=2)
                 self.images.append(image)
             else:
-                self.insert(END, fragment.get('text'))
+                self.insert(END, fragment.get('text'), fragment.get('tag'))
         if autoscroll:
             self.yview_moveto(1.0)
         self.insert(END, '\n')

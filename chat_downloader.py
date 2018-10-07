@@ -292,6 +292,7 @@ def process_fragments(fragments: list):
     fragments = process_bttv_emotes(fragments)
     fragments = process_emoji(fragments)
     fragments = process_unicode(fragments)
+    fragments = process_usernames(fragments)
     return fragments
 
 
@@ -384,6 +385,27 @@ def replace_unicode(match):
     return (
             chr(int.from_bytes(encoded[:2], 'little')) +
             chr(int.from_bytes(encoded[2:], 'little')))
+
+
+def process_usernames(old_fragments: list) -> list:
+    fragments: list = []
+    for fragment in old_fragments:
+        if 'emoticon' not in fragment and '@' in fragment.get('text'):
+            tokens: list = re.findall(r'\S+|\s+', fragment.get('text'))
+            prev_index: int = 0
+            for index, token in enumerate(tokens):
+                if token.startswith('@') and len(token) > 1:
+                    text = ''.join(tokens[prev_index:index])
+                    if text:
+                        fragments.append({'text': text})
+                    fragments.append({'text': token, 'tag': token[1:]})
+                    prev_index = index + 1
+            text = ''.join(tokens[prev_index:])
+            if text:
+                fragments.append({'text': text})
+        else:
+            fragments.append(fragment)
+    return fragments
 
 
 def get_emote(emote_id: str, read_cache=True) -> str:
