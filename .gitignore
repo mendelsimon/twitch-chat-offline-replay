@@ -1,0 +1,7 @@
+downloaded_chats/
+__pycache__/
+.vscode/
+.idea/
+venv/
+api_key.txt
+chatplayerlog.txt
