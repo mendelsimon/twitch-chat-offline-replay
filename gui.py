@@ -158,8 +158,8 @@ class ChatText(Text):
 
     def append_message(self, username: str, fragments: list, color: str, autoscroll: bool = True):
         self.configure(state=NORMAL)
-        self.tag_configure(username, foreground=color, font=self.font_bold)
-        self.insert(END, username, username)
+        self.tag_configure(username.lower(), foreground=color, font=self.font_bold)
+        self.insert(END, username, username.lower())
         self.insert(END, ' : ')
         for fragment in fragments:
             if 'emoticon' in fragment:

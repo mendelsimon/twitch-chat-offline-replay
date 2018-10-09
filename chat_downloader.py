@@ -398,7 +398,7 @@ def process_usernames(old_fragments: list) -> list:
                     text = ''.join(tokens[prev_index:index])
                     if text:
                         fragments.append({'text': text})
-                    fragments.append({'text': token, 'tag': token[1:]})
+                    fragments.append({'text': token, 'tag': token[1:].lower()})
                     prev_index = index + 1
             text = ''.join(tokens[prev_index:])
             if text:
