@@ -168,20 +168,21 @@ class ChatDownloader(Thread):
         self.overwrite_cache = overwrite_cache
 
     def run(self):
-        self.messages = self.download(self.video_id, self.verbose, self.overwrite_cache)
+        self.messages = self.download()
 
-    def download(self, video_id: str, verbose: bool = False, overwrite_cache: bool = False) -> list:
-        self.get_info(video_id, overwrite_cache)
+    def download(self) -> list:
+        self.get_info()
         self.duration = parse_duration(self.info.get('duration'))
         self.title = self.info.get('title')
         self.duration_str = format_seconds(self.duration)
-        return self.get_chat(video_id, verbose, overwrite_cache)
+        return self.get_chat()
 
-    def get_info(self, video_id: str, overwrite_cache: bool = False) -> dict:
+    def get_info(self) -> dict:
+        video_id = self.video_id
         if video_id.startswith('v'):
             video_id = video_id[1:]
         info_filename: str = os.path.join(CACHE_FOLDER, f'info-{video_id}.json')
-        if not overwrite_cache and os.path.exists(info_filename):
+        if not self.overwrite_cache and os.path.exists(info_filename):
             with open(info_filename, 'r') as info_cache:
                 self.info = json.load(info_cache)
                 return self.info
@@ -197,26 +198,25 @@ class ChatDownloader(Thread):
             json.dump(self.info, info_cache)
         return response
 
-    def get_chat(self, video_id: str = None, verbose=False, overwrite_cache=False) -> list:
-        if not video_id:
-            video_id = self.video_id
+    def get_chat(self) -> list:
+        video_id = self.video_id
         if video_id.startswith('v'):
             video_id = video_id[1:]
         chat_filename: str = os.path.join(CACHE_FOLDER, f'chat-{video_id}.json')
-        if not overwrite_cache and os.path.exists(chat_filename):
+        if not self.overwrite_cache and os.path.exists(chat_filename):
             print('Reading cached copy of chat.')
             with open(chat_filename, 'r') as chat_cache:
                 return json.load(chat_cache)
 
-        if verbose:
+        if self.verbose:
             print('Downloading chat.')
 
         if not self.info:
-            self.info = self.get_info(video_id)
+            self.info = self.get_info()
         self.duration = parse_duration(self.info.get('duration'))
         self.title = self.info.get('title')
         self.duration_str = format_seconds(self.duration)
-        if verbose:
+        if self.verbose:
             print(self.info.get('title') + ': ' + self.info.get('duration'))
 
         start_time: float = time()
@@ -239,7 +239,7 @@ class ChatDownloader(Thread):
             self.eta_str = format_seconds(eta)
             self.num_messages = len(messages)
             self.duration_done_str = format_seconds(duration_done)
-            if verbose:
+            if self.verbose:
                 log: str = f'{self.num_messages} messages. '
                 log += f'{self.duration_done_str}/{self.duration_str}. '
                 log += f'Time Left: {self.eta_str}.'
@@ -249,11 +249,11 @@ class ChatDownloader(Thread):
             # sleep(SLEEP_TIME)
 
         if self.killed:
-            if verbose:
+            if self.verbose:
                 print('killed')
             return []
 
-        if verbose and not self.killed:
+        if self.verbose and not self.killed:
             print('\nDone downloading.')
 
         # cache downloaded chat
