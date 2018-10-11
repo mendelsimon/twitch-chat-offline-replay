@@ -144,7 +144,10 @@ class ChatText(Text):
         self.declare_tags()
 
     def declare_tags(self):
-        for color in default_colors:
+        additional_colors = (
+            '#008000'  # Alternative Green
+        )
+        for color in default_colors + additional_colors:
             self.tag_configure(color, foreground=color, font=self.font_bold)
         self.tag_configure('search_result', background='lightgreen')
 
