@@ -145,7 +145,7 @@ class ChatText(Text):
 
     def declare_tags(self):
         additional_colors = (
-            '#008000'  # Alternative Green
+            '#008000',  # Alternative Green
         )
         for color in default_colors + additional_colors:
             self.tag_configure(color, foreground=color, font=self.font_bold)
@@ -167,6 +167,8 @@ class ChatText(Text):
 
     def append_message(self, username: str, fragments: list, color: str, autoscroll: bool = True):
         self.configure(state=NORMAL)
+        if color not in default_colors:
+            self.tag_configure(color, foreground=color, font=self.font_bold)
         self.insert(END, username, color)
         self.insert(END, ' : ')
         for fragment in fragments:
