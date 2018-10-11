@@ -403,7 +403,7 @@ def process_usernames(old_fragments: list) -> list:
                     text: str = ''.join(tokens[prev_index:index])
                     if text:
                         fragments.append({'text': text})
-                    
+                        
                     name: str = token[1:]
                     color: str
                     if name in color_cache:
