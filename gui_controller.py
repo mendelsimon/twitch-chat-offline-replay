@@ -85,7 +85,6 @@ class GuiController:
         for key, binding in self.key_binds.items():
             self.gui_root.bind_all(key, lambda evt, func=binding: func(evt) if not self.search_focused else None)
 
-        self.gui.chat_text.tag_configure('search_result', background='lightgreen')
         self.gui.chat_text.search_frame.entry.bind('<FocusIn>', lambda _: self.focus_search(True))
         self.gui.chat_text.search_frame.entry.bind('<FocusOut>', lambda _: self.focus_search(False))
         self.gui.chat_text.search_frame.entry.bind('<Return>', lambda _: self.search(backwards=True))
