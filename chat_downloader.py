@@ -278,7 +278,7 @@ def process_messages(raw_messages: list, messages: list):
         if not message.get('color'):
             name = message.get('name')
             if name not in color_cache:
-                color = default_colors[(ord(name[0]) + ord(name[-1])) % len(default_colors)]
+                color = calculate_color(name)
                 color_cache.update({name: color})
             message.update({'color': color_cache.get(name)})
 
@@ -286,6 +286,11 @@ def process_messages(raw_messages: list, messages: list):
         fragments: list = raw_message.get('message').get('fragments')
         message.update({'fragments': process_fragments(fragments)})
         messages.append(message)
+
+
+def calculate_color(name: str) -> str:
+    index: int = (ord(name[0]) + ord(name[-1])) % len(default_colors)
+    return default_colors[index]
 
 
 def process_fragments(fragments: list):
@@ -395,10 +400,17 @@ def process_usernames(old_fragments: list) -> list:
             prev_index: int = 0
             for index, token in enumerate(tokens):
                 if token.startswith('@') and len(token) > 1:
-                    text = ''.join(tokens[prev_index:index])
+                    text: str = ''.join(tokens[prev_index:index])
                     if text:
                         fragments.append({'text': text})
-                    fragments.append({'text': token, 'tag': token[1:]})
+                    
+                    name: str = token[1:]
+                    color: str
+                    if name in color_cache:
+                        color = color_cache.get(name)
+                    else:
+                        color = calculate_color(name)
+                    fragments.append({'text': token, 'tag': color})
                     prev_index = index + 1
             text = ''.join(tokens[prev_index:])
             if text:

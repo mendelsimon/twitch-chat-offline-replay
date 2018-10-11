@@ -3,7 +3,7 @@ from tkinter import Tk, BOTH, TOP, LEFT, RIGHT, X, S, HORIZONTAL, Canvas, VERTIC
     SOLID, Text, IntVar, StringVar, BooleanVar, DoubleVar, DISABLED, END, WORD, PhotoImage, TclError, NORMAL
 from tkinter.ttk import Frame, Button, Scale, Scrollbar, Label, Checkbutton, Separator, Style, Entry, Progressbar
 from tkinter.font import Font, BOLD
-from chat_downloader import get_emote, video_exists, parse_url, ChatDownloader, UNICODE_MATCHER, CACHE_FOLDER
+from chat_downloader import get_emote, video_exists, parse_url, ChatDownloader, UNICODE_MATCHER, CACHE_FOLDER, default_colors
 import re
 from PIL import Image, ImageTk
 
@@ -141,6 +141,11 @@ class ChatText(Text):
         self.search_frame = SearchFrame(self.master)
         self.configure(yscrollcommand=self.scrollbar.set)
         self.images: list = []
+        self.declare_tags()
+
+    def declare_tags(self):
+        for color in default_colors:
+            self.tag_configure(color, foreground=color, font=self.font_bold)
 
     def pack(self, **kwargs):
         self.master.pack(**kwargs)
@@ -158,8 +163,7 @@ class ChatText(Text):
 
     def append_message(self, username: str, fragments: list, color: str, autoscroll: bool = True):
         self.configure(state=NORMAL)
-        self.tag_configure(username, foreground=color, font=self.font_bold)
-        self.insert(END, username, username)
+        self.insert(END, username, color)
         self.insert(END, ' : ')
         for fragment in fragments:
             if 'emoticon' in fragment:
