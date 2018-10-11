@@ -276,7 +276,7 @@ def process_messages(raw_messages: list, messages: list):
             'offset': raw_message.get('content_offset_seconds')
         }
         if not message.get('color'):
-            name = message.get('name')
+            name = message.get('name').lower()
             if name not in color_cache:
                 color = calculate_color(name)
                 color_cache.update({name: color})
