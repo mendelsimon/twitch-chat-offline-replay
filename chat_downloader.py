@@ -275,12 +275,14 @@ def process_messages(raw_messages: list, messages: list):
             'color': raw_message.get('message').get('user_color'),
             'offset': raw_message.get('content_offset_seconds')
         }
-        if not message.get('color'):
-            name = message.get('name').lower()
+
+        name = message.get('name').lower()
+        if message.get('color'):
             if name not in color_cache:
-                color = calculate_color(name)
-                color_cache.update({name: color})
-            message.update({'color': color_cache.get(name)})
+                color_cache.update({name: message.get('color')})
+        else:
+            color = calculate_color(name)
+            message.update({'color': color})
 
         # Insert BTTV emotes
         fragments: list = raw_message.get('message').get('fragments')
@@ -288,9 +290,16 @@ def process_messages(raw_messages: list, messages: list):
         messages.append(message)
 
 
-def calculate_color(name: str) -> str:
-    index: int = (ord(name[0]) + ord(name[-1])) % len(default_colors)
-    return default_colors[index]
+def calculate_color(name: str, cache=True) -> str:
+    color: str
+    if name not in color_cache:
+        index: int = (ord(name[0]) + ord(name[-1])) % len(default_colors)
+        color = default_colors[index]
+        if cache:
+            color_cache.update({name: color})
+    else:
+        color = color_cache.get(name)
+    return color
 
 
 def process_fragments(fragments: list):
@@ -404,13 +413,8 @@ def process_usernames(old_fragments: list) -> list:
                     if text:
                         fragments.append({'text': text})
                         
-                    name: str = token[1:]
-                    color: str
-                    if name in color_cache:
-                        color = color_cache.get(name)
-                    else:
-                        color = calculate_color(name)
-                    fragments.append({'text': token, 'tag': color})
+                    name: str = token[1:].lower()
+                    fragments.append({'text': token, 'tag': calculate_color(name, cache=False)})
                     prev_index = index + 1
             text = ''.join(tokens[prev_index:])
             if text:
