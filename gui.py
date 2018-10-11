@@ -146,6 +146,7 @@ class ChatText(Text):
     def declare_tags(self):
         for color in default_colors:
             self.tag_configure(color, foreground=color, font=self.font_bold)
+        self.tag_configure('search_result', background='lightgreen')
 
     def pack(self, **kwargs):
         self.master.pack(**kwargs)
