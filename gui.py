@@ -140,7 +140,7 @@ class ChatText(Text):
         self.scrollbar = Scrollbar(self.master, orient=VERTICAL, command=self.yview)
         self.search_frame = SearchFrame(self.master)
         self.configure(yscrollcommand=self.scrollbar.set)
-        self.images: list = []
+        self.images: dict = {}
         self.declare_tags()
 
     def declare_tags(self):
@@ -171,10 +171,12 @@ class ChatText(Text):
         for fragment in fragments:
             if 'emoticon' in fragment:
                 emote_id = fragment.get('emoticon').get('emoticon_id')
-                image_path = get_emote(emote_id)
-                image = ImageTk.PhotoImage(Image.open(image_path))
+                image = self.images.get(emote_id)
+                if image is None:
+                    image_path = get_emote(emote_id)
+                    image = ImageTk.PhotoImage(Image.open(image_path))
+                    self.images[emote_id] = image
                 self.image_create(END, image=image, padx=2, pady=2)
-                self.images.append(image)
             else:
                 self.insert(END, fragment.get('text'), fragment.get('tag'))
         if autoscroll:
